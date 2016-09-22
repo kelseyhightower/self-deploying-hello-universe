@@ -1,0 +1,31 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: hello-universe
+  name: hello-universe
+spec:
+  replicas: 
+  template:
+    metadata:
+      labels:
+        app: hello-universe
+    spec:
+      containers:
+        - name: hello-universe
+          image: "gcr.io/hightowerlabs/hello-universe:0.0.1"
+          command:
+            - "/opt/bin/hello-universe"
+          args:
+            - "-http=0.0.0.0:443"
+          volumeMounts:
+            - name: bin
+              mountPath: /opt/bin
+            - name: tls
+              mountPath: /etc/hello-universe
+      volumes:
+        - name: bin
+          emptyDir: {}
+        - name: tls
+          secret:
+            secretName: "hello-universe"
