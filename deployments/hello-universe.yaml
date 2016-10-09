@@ -5,7 +5,7 @@ metadata:
     app: hello-universe
   name: hello-universe
 spec:
-  replicas: 
+  replicas: 3
   template:
     metadata:
       labels:
@@ -19,13 +19,9 @@ spec:
           args:
             - "-http=0.0.0.0:443"
           volumeMounts:
-            - name: bin
-              mountPath: /opt/bin
             - name: tls
               mountPath: /etc/hello-universe
       volumes:
-        - name: bin
-          emptyDir: {}
         - name: tls
           secret:
             secretName: "hello-universe"

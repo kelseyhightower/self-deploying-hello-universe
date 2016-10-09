@@ -8,24 +8,18 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/kelseyhightower/hello-universe/kubernetes"
+	"github.com/kelseyhightower/kargo"
 )
 
 var (
-	cert             string
-	key              string
-	expose           bool
-	replicas         int
-	hostname         string
-	httpAddr         string
-	enableKubernetes bool
+	cert     string
+	key      string
+	hostname string
+	httpAddr string
 )
 
 func main() {
 	flag.StringVar(&httpAddr, "http", "127.0.0.1:443", "HTTP service address")
-	flag.BoolVar(&expose, "expose", false, "Create a Kubernetes")
-	flag.BoolVar(&enableKubernetes, "kubernetes", false, "Deploy to Kubernetes.")
-	flag.IntVar(&replicas, "replicas", 1, "Number of replicas")
 	flag.StringVar(&cert, "cert", "/etc/hello-universe/tls.crt", "TLS certificate path")
 	flag.StringVar(&key, "key", "/etc/hello-universe/tls.key", "TLS private key path")
 	flag.Parse()
@@ -38,14 +32,31 @@ func main() {
 	log.Println("Initializing hello-universe ...")
 	errChan := make(chan error, 10)
 
-	if enableKubernetes {
-		if err := kubernetes.CreateSecret(key, cert); err != nil {
+	var dm *kargo.DeploymentManager
+	if kargo.EnableKubernetes {
+		/*
+			link, err := Upload(UploadConfig{
+				ProjectID:  "hightowerlabs",
+				BucketName: "hello-universe",
+				ObjectName: "hello-universe",
+			})
+
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			fmt.Println(link)
+			os.Exit(0)
+
+		*/
+		dm = kargo.New("127.0.0.1:8080")
+		err := dm.Create(kargo.DeploymentConfig{
+			Args: []string{"-http=0.0.0.0:443"},
+			Name: "hello-universe",
+		})
+		if err != nil {
 			log.Fatal(err)
 		}
-		if err := kubernetes.CreateDeployment(); err != nil {
-			log.Fatal(err)
-		}
-		go kubernetes.Logs()
 	} else {
 		http.HandleFunc("/", httpHandler)
 
@@ -64,9 +75,11 @@ func main() {
 			}
 		case <-signalChan:
 			log.Printf("Shutdown signal received, exiting...")
-			if enableKubernetes {
-				kubernetes.DeleteDeployment()
-				kubernetes.DeleteSecret()
+			if kargo.EnableKubernetes {
+				err := dm.Delete()
+				if err != nil {
+					log.Fatal(err)
+				}
 			}
 			os.Exit(0)
 		}
