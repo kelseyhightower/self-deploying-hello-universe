@@ -56,6 +56,11 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
+
+		err = dm.Logs(os.Stdout)
+		if err != nil {
+			log.Println(err)
+		}
 	} else {
 		http.HandleFunc("/", httpHandler)
 
