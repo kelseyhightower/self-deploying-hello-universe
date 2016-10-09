@@ -12,16 +12,12 @@ import (
 )
 
 var (
-	cert     string
-	key      string
 	hostname string
 	httpAddr string
 )
 
 func main() {
-	flag.StringVar(&httpAddr, "http", "127.0.0.1:443", "HTTP service address")
-	flag.StringVar(&cert, "cert", "/etc/hello-universe/tls.crt", "TLS certificate path")
-	flag.StringVar(&key, "key", "/etc/hello-universe/tls.key", "TLS private key path")
+	flag.StringVar(&httpAddr, "http", "127.0.0.1:80", "HTTP service address")
 	flag.Parse()
 
 	var err error
@@ -49,9 +45,14 @@ func main() {
 			os.Exit(0)
 
 		*/
+
+		env := make(map[string]string)
+		env["HELLO_UNIVERSE_TOKEN"] = os.Getenv("HELLO_UNIVERSE_TOKEN")
+
 		dm = kargo.New("127.0.0.1:8080")
 		err := dm.Create(kargo.DeploymentConfig{
-			Args: []string{"-http=0.0.0.0:443"},
+			Args: []string{"-http=0.0.0.0:80"},
+			Env:  env,
 			Name: "hello-universe",
 		})
 		if err != nil {
@@ -61,7 +62,7 @@ func main() {
 		http.HandleFunc("/", httpHandler)
 
 		go func() {
-			errChan <- http.ListenAndServeTLS(httpAddr, cert, key, nil)
+			errChan <- http.ListenAndServe(httpAddr, nil)
 		}()
 	}
 
