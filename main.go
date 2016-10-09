@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -30,30 +31,27 @@ func main() {
 
 	var dm *kargo.DeploymentManager
 	if kargo.EnableKubernetes {
-		/*
-			link, err := Upload(UploadConfig{
-				ProjectID:  "hightowerlabs",
-				BucketName: "hello-universe",
-				ObjectName: "hello-universe",
-			})
+		link, err := kargo.Upload(kargo.UploadConfig{
+			ProjectID:  "hightowerlabs",
+			BucketName: "hello-universe",
+			ObjectName: "hello-universe",
+		})
 
-			if err != nil {
-				log.Fatal(err)
-			}
+		if err != nil {
+			log.Fatal(err)
+		}
 
-			fmt.Println(link)
-			os.Exit(0)
-
-		*/
-
+		fmt.Println(link)
 		env := make(map[string]string)
 		env["HELLO_UNIVERSE_TOKEN"] = os.Getenv("HELLO_UNIVERSE_TOKEN")
 
 		dm = kargo.New("127.0.0.1:8080")
-		err := dm.Create(kargo.DeploymentConfig{
-			Args: []string{"-http=0.0.0.0:80"},
-			Env:  env,
-			Name: "hello-universe",
+
+		err = dm.Create(kargo.DeploymentConfig{
+			Args:      []string{"-http=0.0.0.0:80"},
+			Env:       env,
+			Name:      "hello-universe",
+			BinaryURL: link,
 		})
 		if err != nil {
 			log.Fatal(err)
