@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -24,9 +23,10 @@ func main() {
 	var err error
 	hostname, err = os.Hostname()
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+		os.Exit(1)
 	}
-	log.Println("Initializing hello-universe ...")
+	fmt.Printf("%s - initializing hello-universe...\n", hostname)
 	errChan := make(chan error, 10)
 
 	var dm *kargo.DeploymentManager
@@ -38,15 +38,14 @@ func main() {
 		})
 
 		if err != nil {
-			log.Fatal(err)
+			fmt.Println(err)
+			os.Exit(1)
 		}
 
-		fmt.Println(link)
 		env := make(map[string]string)
 		env["HELLO_UNIVERSE_TOKEN"] = os.Getenv("HELLO_UNIVERSE_TOKEN")
 
-		dm = kargo.New("127.0.0.1:8080")
-
+		dm = kargo.New()
 		err = dm.Create(kargo.DeploymentConfig{
 			Args:      []string{"-http=0.0.0.0:80"},
 			Env:       env,
@@ -54,12 +53,14 @@ func main() {
 			BinaryURL: link,
 		})
 		if err != nil {
-			log.Fatal(err)
+			fmt.Println(err)
+			os.Exit(1)
 		}
 
 		err = dm.Logs(os.Stdout)
 		if err != nil {
-			log.Println(err)
+			fmt.Println(err)
+			os.Exit(1)
 		}
 	} else {
 		http.HandleFunc("/", httpHandler)
@@ -75,14 +76,16 @@ func main() {
 		select {
 		case err := <-errChan:
 			if err != nil {
-				log.Fatal(err)
+				fmt.Printf("%s - %s\n", hostname, err)
+				os.Exit(1)
 			}
 		case <-signalChan:
-			log.Printf("Shutdown signal received, exiting...")
+			fmt.Printf("%s - Shutdown signal received, exiting...\n", hostname)
 			if kargo.EnableKubernetes {
 				err := dm.Delete()
 				if err != nil {
-					log.Fatal(err)
+					fmt.Printf("%s - %s\n", hostname, err)
+					os.Exit(1)
 				}
 			}
 			os.Exit(0)

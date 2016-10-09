@@ -21,7 +21,7 @@ var html = `
 `
 
 func httpHandler(w http.ResponseWriter, r *http.Request) {
-	format := "%s - - [%s] \"%s %s %s\" %s\n"
+	format := "%s - [%s] \"%s %s %s\" %s\n"
 	fmt.Printf(format, hostname, time.Now().Format(time.RFC1123),
 		r.Method, r.URL.Path, r.Proto, r.UserAgent())
 	fmt.Fprintf(w, html, hostname)
