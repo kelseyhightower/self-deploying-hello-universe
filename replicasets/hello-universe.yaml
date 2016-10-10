@@ -1,0 +1,18 @@
+apiVersion: extensions/v1beta1
+kind: ReplicaSet
+metadata:
+  labels:
+    run: hello-universe
+  name: hello-universe
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: hello-universe
+    spec:
+      containers:
+        - name: hello-universe
+          image: "kelseyhightower/hello-universe:1.0.0"
+          args:
+            - "-http=0.0.0.0:80"

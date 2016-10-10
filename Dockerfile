@@ -1,4 +1,4 @@
-FROM alpine:3.1
+FROM scratch
 MAINTAINER Kelsey Hightower <kelsey.hightower@gmail.com>
-RUN mkdir -p /opt/bin
-ADD hello-universe /opt/bin/hello-universe
+ADD hello-universe /hello-universe
+ENTRYPOINT ["/hello-universe"]
