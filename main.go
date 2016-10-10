@@ -60,7 +60,7 @@ func main() {
 		err = dm.Logs(os.Stdout)
 		if err != nil {
 			fmt.Println(err)
-			os.Exit(1)
+			fmt.Println("Local logging has been disabled.")
 		}
 	} else {
 		http.HandleFunc("/", httpHandler)
