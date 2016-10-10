@@ -26,7 +26,7 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	fmt.Printf("%s - initializing hello-universe...\n", hostname)
+	fmt.Println("Starting hello-universe...")
 	errChan := make(chan error, 10)
 
 	var dm *kargo.DeploymentManager
@@ -59,7 +59,6 @@ func main() {
 
 		err = dm.Logs(os.Stdout)
 		if err != nil {
-			fmt.Println(err)
 			fmt.Println("Local logging has been disabled.")
 		}
 	} else {
