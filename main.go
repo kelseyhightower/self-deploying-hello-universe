@@ -13,6 +13,7 @@ import (
 
 var (
 	hostname string
+	region   string
 	httpAddr string
 )
 
@@ -26,6 +27,8 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+	region = os.Getenv("REGION")
+
 	fmt.Println("Starting hello-universe...")
 	errChan := make(chan error, 10)
 

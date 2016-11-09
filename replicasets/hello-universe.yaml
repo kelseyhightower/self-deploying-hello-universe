@@ -14,5 +14,11 @@ spec:
       containers:
         - name: hello-universe
           image: "kelseyhightower/hello-universe:1.0.0"
+          env:
+            - name: REGION
+              valueFrom:
+                configMapKeyRef:
+                  name: cluster
+                  key: region
           args:
             - "-http=0.0.0.0:80"
