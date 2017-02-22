@@ -45,13 +45,9 @@ func main() {
 			os.Exit(1)
 		}
 
-		env := make(map[string]string)
-		env["HELLO_UNIVERSE_TOKEN"] = os.Getenv("HELLO_UNIVERSE_TOKEN")
-
 		dm = kargo.New()
 		err = dm.Create(kargo.DeploymentConfig{
 			Args:      []string{"-http=0.0.0.0:80"},
-			Env:       env,
 			Name:      "hello-universe",
 			BinaryURL: link,
 		})
