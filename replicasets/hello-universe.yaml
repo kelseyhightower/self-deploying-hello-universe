@@ -13,12 +13,6 @@ spec:
     spec:
       containers:
         - name: hello-universe
-          image: "kelseyhightower/hello-universe:1.0.0"
-          env:
-            - name: REGION
-              valueFrom:
-                configMapKeyRef:
-                  name: cluster
-                  key: region
+          image: "gcr.io/hightowerlabs/hello-universe:1.0.0"
           args:
             - "-http=0.0.0.0:80"
