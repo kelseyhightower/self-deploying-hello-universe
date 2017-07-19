@@ -18,3 +18,30 @@ go_binary(
     library = ":go_default_library",
     visibility = ["//visibility:public"],
 )
+
+load(
+    "@io_bazel_rules_docker//docker:docker.bzl",
+    "docker_build", "docker_push",
+)
+
+# I put the Go binary into a Docker image.
+# Load me into the Docker daemon with `bazel run :image`
+# Produce a tarball compatible with `docker load` via:
+#   bazel build :image.tar
+docker_build(
+    name = "image",
+    base = "@base//image",
+    files = [":hello-universe"],
+    entrypoint = ["/hello-universe"],
+)
+
+# I publish the docker image to the specified registry,
+# when you `bazel run :push`
+docker_push(
+    name = "push",
+    image = ":image",
+    registry = "gcr.io",
+    repository = "your-project/hello-universe",
+    tag = "{BUILD_USER}",
+    stamp = True,
+)

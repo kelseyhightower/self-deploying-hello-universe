@@ -66,3 +66,23 @@ go_repository(
     importpath = "golang.org/x/text",
     commit = "cfdf022e86b4ecfb646e1efbd7db175dd623a8fa",
 )
+
+git_repository(
+    name = "io_bazel_rules_docker",
+    remote = "https://github.com/bazelbuild/rules_docker.git",
+    commit = "79aa5de0eb7348876316c537f7cec26bae02cfab",
+)
+
+load(
+  "@io_bazel_rules_docker//docker:docker.bzl",
+  "docker_repositories", "docker_pull",
+)
+docker_repositories()
+
+# I have useful things like glibc and ca-certs.
+docker_pull(
+    name = "base",
+    registry = "gcr.io",
+    repository = "distroless/base",
+    digest = "sha256:06fcd3edcfeefe13b82fa8bdb9e3f4fa3bf4c7e8fe997bee0230e392f77d0e04",
+)
