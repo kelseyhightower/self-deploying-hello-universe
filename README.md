@@ -1,5 +1,21 @@
 # hello-universe
 
+## Build
+
+This repo is go-gettable and works with the standard go tools. It also works with [Bazel](https://www.bazel.build).
+
+Building with Bazel requires a bazel 5.2.0+ installation and running the following command:
+
+```
+bazel build //...
+```
+
+After the build is complete the `hello-universe` binary lives under the bazel-bin directory: 
+
+```
+bazel-bin/hello-universe
+```  
+
 ## Example Usage
 
 ```
